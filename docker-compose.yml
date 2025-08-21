@@ -1,0 +1,32 @@
+services:
+  qubesos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qubesos
+
+    pid: "host"
+    network_mode: "host"
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+
+    volumes:
+      - db-data:/app/db
+
+    environment:
+      PR0CKS_BIN: "/home/unpriv/go/bin/pr0cks"
+      DJANGO_DB_DIR: "/app/db"
+
+    command: >
+      bash -lc "
+        mkdir -p /app/db &&
+        python3 manage.py makemigrations pr0cks_app || true &&
+        python3 manage.py migrate --noinput &&
+        exec gunicorn --bind 127.0.0.1:8000 QubesOS.wsgi:application
+      "
+
+    restart: unless-stopped
+
+volumes:
+  db-data:
