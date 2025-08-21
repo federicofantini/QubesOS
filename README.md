@@ -4,9 +4,6 @@
 This app manages local [pr0cks](https://github.com/n1nj4sec/pr0cks) instances (proxy+DNS) and per-VM bindings that install strict iptables so traffic is forced through a SOCKS5 proxy VM, with host guard rails enabled by default.
 
 ![Topology](imgs/topology.png "Topology")
-
-<br>
-
 ![Status](imgs/status.png "Status")
 
 
@@ -119,12 +116,12 @@ The traffic will be forced into pr0cks
 Host safety belts:
 ```bash
 # INPUT from isolated: only pr0cks TCP+UDP to the isolated GW IP, drop the rest
--A INPUT -d 192.168.122.1/32 -i $ISO_BR -p tcp -m tcp --dport 10001 -m comment --comment "pr0cks_vm:<id>" -j ACCEPT
--A INPUT -d 192.168.122.1/32 -i $ISO_BR -p udp -m udp --dport 10001 -m comment --comment "pr0cks_vm:<id>" -j ACCEPT
+-A INPUT -i $ISO_BR -d 192.168.122.1 -p tcp --dport 10001 -m comment --comment "pr0cks_vm:<id>" -j ACCEPT
+-A INPUT -i $ISO_BR -d 192.168.122.1 -p udp --dport 10001 -m comment --comment "pr0cks_vm:<id>" -j ACCEPT
 -A INPUT -i $ISO_BR -m comment --comment "pr0cks_vm:<id>" -j DROP
 
 # INPUT from NAT: only replies
--A INPUT -i $NAT_BR -m conntrack --ctstate RELATED,ESTABLISHED -m comment --comment "pr0cks_vm:<id>" -j ACCEPT
+-A INPUT -i $NAT_BR -m conntrack --ctstate ESTABLISHED,RELATED -m comment --comment "pr0cks_vm:<id>" -j ACCEPT
 -A INPUT -i $NAT_BR -m comment --comment "pr0cks_vm:<id>" -j DROP
 
 # No bridge cross-talk
@@ -132,7 +129,7 @@ Host safety belts:
 -A FORWARD -i $NAT_BR -o $ISO_BR -m comment --comment "pr0cks_vm:<id>" -j DROP
 
 # OUTPUT to NAT: allow only the SOCKS5 egress
--A OUTPUT -d 192.168.100.10/32 -o $NAT_BR -p tcp -m tcp --dport 12345 -m comment --comment "pr0cks_vm:<id>" -j ACCEPT
+-A OUTPUT -o $NAT_BR -d 192.168.100.10/32 -p tcp --dport 12345 -m comment --comment "pr0cks_vm:<id>" -j ACCEPT
 -A OUTPUT -o $NAT_BR -m comment --comment "pr0cks_vm:<id>" -j DROP
 
 # Extra belt: drop any host-originated packets that spoof the VM IP
@@ -141,10 +138,3 @@ Host safety belts:
 
 All rules are tagged; disable/delete a binding removes every matching rule reliably.
 
-## Important note
-If you want stronger safety when you mix personal VMs with malware-prone VMs, create separate isolated networks per VM group, e.g.:
-- personal → `isolated_personal`
-- malware analysis → `isolated_malware_analysis`
-- pentest → `isolated_pentest`
-
-This limits lateral movement: a compromised VM can't scan, talk to, or pivot through other VMs on the same virtual network because it's confined to its own bridge. Combined with the host guard-rails (INPUT/FORWARD drops and OUTPUT allow-lists), this segmentation prevents accidental cross-talk and keeps proxy/NAT paths strictly controlled per group.
