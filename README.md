@@ -1,5 +1,15 @@
 # Pr0cks Manager
 
+## Table of contents
+- [Introduction](#introduction)
+- [Example topology](#example-topology)
+- [Quick start](#quick-start)
+  - [Create Proxy VM](#create-proxy-vm)
+  - [Run docker](#run-docker)
+  - [UI](#ui)
+- [Networking](#networking)
+- [Security note](#security-note)
+
 ## Introduction
 This app manages local [pr0cks](https://github.com/n1nj4sec/pr0cks) instances (proxy+DNS) and per-VM bindings that install strict iptables so traffic is forced through a SOCKS5 proxy VM, with host guard rails enabled by default.
 
