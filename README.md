@@ -138,3 +138,11 @@ Host safety belts:
 
 All rules are tagged; disable/delete a binding removes every matching rule reliably.
 
+## Security note
+
+If you want stronger safety when you mix personal VMs with malware-prone VMs, create separate isolated networks per VM group:
+- personal → `isolated_personal`
+- malware analysis → `isolated_malware_analysis`
+- pentest → `isolated_pentest`
+
+This limits lateral movement: a compromised VM can't scan, talk to, or pivot through other VMs on the same host because it's confined to its own bridge. Combined with the host guard-rails (INPUT/FORWARD drops and OUTPUT allow-lists), this segmentation prevents accidental cross-talk and keeps proxy/NAT paths strictly controlled per group.
