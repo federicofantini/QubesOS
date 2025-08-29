@@ -203,7 +203,7 @@ def build_rules(ip: str, proxy_port: int, dns_port: int, remote_ip: str, remote_
     rules.append((["PREROUTING", "-s", ip, "-p", "tcp", "--dport", "53", "-m", "comment", "--comment", tag, "-j", "REDIRECT", "--to-ports", str(dns_port)], True))
     rules.append((["PREROUTING", "-s", ip, "-p", "udp", "--dport", "53", "-m", "comment", "--comment", tag, "-j", "REDIRECT", "--to-ports", str(dns_port)], True))
     rules.append((["PREROUTING", "-s", ip, "-p", "tcp", "!", "--dport", "53", "-m", "comment", "--comment", tag, "-j", "REDIRECT", "--to-ports", str(proxy_port)], True))
-    rules.append((["PREROUTING", "-s", ip, "-p", "udp", "!", "--dport", "53", "-m", "comment", "--comment", tag, "-j", "REDIRECT", "--to-ports", str(dns_port)], True))
+    rules.append((["PREROUTING", "-s", ip, "-p", "udp", "!", "--dport", "53", "-m", "comment", "--comment", tag, "-j", "REDIRECT", "--to-ports", str(proxy_port)], True))
 
     # Guard rail between bridges
     rules.append((["FORWARD", "-i", isolated_br, "-o", natted_br, "-m", "comment", "--comment", tag, "-j", "DROP"], False))
