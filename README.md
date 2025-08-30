@@ -159,7 +159,7 @@ If you want stronger safety when you mix personal VMs with malware-prone VMs, cr
 This limits lateral movement: a compromised VM can't scan, talk to, or pivot through other VMs on the same host because it's confined to its own bridge. Combined with the host guard-rails (INPUT/FORWARD drops and OUTPUT allow-lists), this segmentation prevents accidental cross-talk and keeps proxy/NAT paths strictly controlled per group.
 
 ## Fixes
-- ERROR: AttributeError: module 'ssl' has no attribute 'wrap_socket'
+- ERROR: `AttributeError: module 'ssl' has no attribute 'wrap_socket'`
   - FIX: https://stackoverflow.com/a/77852742
-- ERROR: AttributeError: module 'multiprocessing.connection' has no attribute 'CHALLENGE'
+- ERROR: `AttributeError: module 'multiprocessing.connection' has no attribute 'CHALLENGE'`
   - FIX: https://github.com/dabeaz/curio/commit/a5590bb04de3f1f201fd1fd0ce9cfe5825db80ac
